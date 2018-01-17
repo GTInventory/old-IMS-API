@@ -1,0 +1,40 @@
+<div class="container index-div" ng-controller="EquipmentsController">
+   <form class="equipment-form row" ng-submit="submitEquipmentCreation()">
+      <div class="col-lg-2"></div>
+      <fieldset class="col-lg-8 col-md-12">
+         <h1>Create Equipment</h1>
+
+         <div class="form-group">
+            <label>Select Equipment Type</label>
+            <select class="form-control" ng-change="updateEqType()" ng-model="formObj.equipment_type_name" ng-options="item.name as item.name for item in equipmentTypeList"></select>
+         </div>
+
+
+         <div ng-repeat="label in labels">
+            <div class="form-group">
+               <label>{{ label }}</label>
+               <input class="form-control" type="text" ng-model="formObj[label]" placeholder="Enter">
+            </div>
+         </div>
+
+         <fieldset ng-repeat="attribute in attrList.attributes track by $index">
+            <div class="form-group">
+               <!-- <input type="text" ng-model="attrList.attributes[$index].name" placeholder="Key" readonly> -->
+               <label>{{attrList.attributes[$index].name}}</label>
+               <input type="text" ng-model="attrList.attributes[$index].value" placeholder="Value" required>
+               <!-- <input value="Remove" type="button" class="remove" ng-show="$index != 0" ng-click="removeAttribute($event, key)"></input> -->
+            </div>
+
+         </fieldset>
+        <!--  <input value="Add fields" type="button" class="addfields" ng-click="addNewAttribute($index, key)"></input> -->
+
+
+         <button class="btn btn-default" type="submit">Submit</button>
+      </fieldset>
+      <div class="col-lg-2"></div>
+
+   </form>
+
+<!-- <a class="pure-button" href="#!/">Home</a> -->
+
+</div>

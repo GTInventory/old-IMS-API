@@ -1,0 +1,66 @@
+{% extends "template.html" %}	
+		{% block sidebar %}
+          {{ include('components/allequipmentsidebar.html') }}
+        {% endblock %}
+        {% block content %}
+  
+  
+         <h1>{{ param }}</h1>
+         <p> YO </p>
+         <div class="table-responsive">
+	      <table class="table table-striped table-bordered " id="main_table">
+	        <thead>
+	          <tr>
+	            <th>Equipment Type</th>
+	            <th>Dept. Tag</th>
+	            <th>Status</th>
+	            <th>Loaned To</th>
+	          </tr>
+	        </thead>
+	        <tbody id='table_body'>
+		    </tbody>
+          </table>
+          </div>
+
+         <script>
+        $(document).ready(function(){
+
+        	$out = ''
+        	$path = 'http://127.0.0.1:8080/v1/equipments';
+
+            $.getJSON($path, function(attributes) {
+
+            	for (key in attributes){
+
+            		$equipment = attributes[key];
+            		$row = '<tr id=\'' + $equipment.id + '\'>'
+            		$row += '<td>' + $equipment.equipmentTypeName +  ' </td>'
+            		$row += '<td>' + $equipment.departmentTag +  ' </td>'
+            		$row += '<td>' + $equipment.status +  ' </td>'
+            		$row += '<td>' + $equipment.loanedTo +  ' </td>'
+            		$row += '</tr>'
+            		$out += $row;
+            	}
+            	$("#main_table").append($out);
+
+             });
+
+            $("button").click(function(){
+            	// $id = $(this).attr('id');
+       			$("p").text("HELLLLLO");
+
+       		});
+
+       		$("#main_table").on('click', 'tr', function(){
+       			$id = $(this).attr('id');
+       			location.href = 'http://127.0.0.1:8080/equipment/' + $id
+		        $("p").text($id);
+		    });
+        });
+       
+
+        </script>
+
+
+
+        {% endblock %}

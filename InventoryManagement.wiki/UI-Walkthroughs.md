@@ -1,0 +1,2 @@
+## **Create a Loan for a User**
+In order to create a loan for a user, click Views on the top navbar and navigate to the Users table view. Filter the username by the person your are creating a loan for, then select "Loan" on the right Actions column. This will take you to the Loans page for the selected User where you can check as many "inventory" items to loan to that person.

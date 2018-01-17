@@ -1,0 +1,399 @@
+JSON Formats and examples
+
+1. Equipment Type
+
+    Create (POST)
+
+    Unique identifiers are "name" and "_id". "_id" is used internally.
+    Each Equipment Type Attribute in Equipment Type document must have unique name.
+
+    "required" - Forces Equipment to have an attribute.
+    "unique" - Enforces uniqueness of given Equipment Attribute. For example, laptop's serial number.
+    "data_type" - Not supported in current version. It is required to have 'data_type' field in request JSON but it is unused and unchecked.
+    "regex" - Enforces value of Equipment Attribute to follow regex format.
+    "enum" - true = set, false = unset. Enforces value of Equipment Attribute to be one of the 'enum_values' element.
+    "enum_values" - If enum is set, value of Equipment Attribute must be one of the 'enum_values' element.
+
+    * "data_type" is unsupported due to current way of searching.
+    Nested search (searching for attribute's fields) and conditional search is not possible.
+    This is one of the milestone on next release.
+
+    http://server_url/v1/equipmenttypes
+
+    Sample request JSON:
+
+    {
+      "name" : "laptop",
+      "comments" : "some comments here.",
+      "equipment_type_attributes": [
+        {
+          "name": "serial_number",
+          "required": true,
+          "unique": true,
+          "data_type" : "string",
+          "regex" : "some regex string",
+          "help_comment" : "some comment",
+          "enum" : false,
+          "enum_values" : [
+            "value1", "value2", "value3"
+          ]
+        },
+        {
+          "name": "serial_number1",
+          "required": true,
+          "unique": true,
+          "data_type" : "string",
+          "regex" : "some regex string",
+          "help_comment" : "some comment",
+          "enum" : false,
+          "enum_values" : [
+            "value1", "value2", "value3"
+          ]
+        }
+      ]
+    }
+
+    Read (GET)
+
+    http://server_url/v1/equipmenttypes?searchField=value&searchField=value
+
+    This API searches for exact match and does not support nested search or conditional search.
+    'searchField' cannot be a field in 'equipment_type_attributes'.
+    'searchField' can be '_id', 'name', or 'comments'.
+    More search criteria can be added by using '&' as a separator.
+
+    If query is not given, then API returns all available Equipment Type documents (search all).
+
+    http://server_url/v1/equipmenttypes
+
+    Update (PUT)
+
+    http://server_url/v1/equipmenttypes
+
+    Either '_id' or 'name' must be present in the request JSON as an identifier.
+
+    'update_equipment_type' updates an Equipment Type document's fields.
+    This cannot be used to update Equipment Type Attribute.
+
+    'update_equipment_type_attributes' updates Equipment Type Attributes in an Equipment Type document.
+    '_id' is not update-able and must be presented.
+    All other fields are optional.
+
+        "unique" - Setting unique from false to true does not affect current Equipments until their next update.
+        Uniqueness check will be applied on the next update or new Equipments.
+
+        "data_type" - This is unsupported in current version.
+
+        "regex" - Just like "unique", changing this does not affect current Equipments until their next update.
+        Regular expression check will be applied to new Equipments or current Equipment's next update.
+
+        "enum" - Just like "unique", changing this does not affect current Equipments until their next update.
+        Enum check will be applied to new Equipments or current Equipment's next update.
+
+    'add_equipment_type_attributes' adds new Equipment Type Attribute in an Equipment Type document.
+    All fields are expected in the JSON. This won't affect current Equipments until their next update.
+
+    'remove_equipment_type_attributes' removes Equipment Type Attributes in an Equipment Type document.
+    MongoId strings are expected. Remove won't be allowed if there is an Equipment Attribute that has this Equipment Type Attribute.
+
+    Updating this document may not always work as expected since all Equipment documents are dependent
+    on this document. Please refer to the error message for details.
+
+    Sample request JSON:
+
+    {
+    	"_id" : "58e81cc37f8b9ac4571ef7c6",
+        "name" : "laptop",
+
+    	"update_equipment_type" :
+    	{
+    		"name" : "laptop2",
+    		"comments" : "Changed laptop to laptop2."
+    	},
+
+    	"update_equipment_type_attributes" :
+    	[
+    		{
+    			"_id" : "58e81cc37f8b9ac4571ef7c6",
+    			"name" : "serial_number",
+    			"required" : true,
+    			"unique" : true,
+    			"data_type" : "string",
+    			"regex" : "some regex string",
+    			"help_comment" : "some comment.",
+    			"enum" : true,
+    			"enum_values" : ["value1", "value2", "value3"]
+    		}
+    	],
+
+    	"add_equipment_type_attributes" :
+    	[
+    		{
+    			"name": "serial_number4",
+    			"required": true,
+    			"unique": true,
+    			"data_type" : "string",
+    			"regex" : "some regex string",
+    			"help_comment" : "some comment",
+    			"enum" : true,
+    			"enum_values" : [
+    				"value1", "value2", "value3"
+    			]
+    		}
+    	],
+
+    	"remove_equipment_type_attributes" :
+    	[
+    		"58e81cc37f8b9ac4571ef7c7"
+    	]
+    }
+
+    Delete (DELETE)
+
+    http://server_url/v1/equipmenttypes
+
+    Bulk delete is not supported. Either '_id' or 'name' must be present in the request JSON.
+
+    Sample request JSON:
+
+    {
+        "_id" : "58e81cc37f8b9ac4571ef7c6",
+        "name" : "laptop"
+    }
+
+
+2. Equipment
+
+    Create (POST)
+
+    Unique identifiers are "department_tag", "gt_tag", and "_id". "_id" is set by the system and used internally.
+    Attribute's name and value are checked by the system using Equipment Type Attribute information.
+
+    http://server_url/v1/equipments
+
+    Sample request JSON:
+
+    {
+    	"department_tag" : "math-12342",
+    	"gt_tag" : null,
+    	"equipment_type_name" : "laptop",
+    	"comments" : "some comment",
+
+    	"attributes" : [
+    		{
+    			"name" : "serial_number",
+    			"value" : "DS6AF5DS4F6-454645DSF"
+    		},
+    		{
+    			"name" : "serial_number1",
+    			"value" : "DS6AF5DS4F6-454645DSF"
+    		}
+    	]
+    }
+
+    Read (GET)
+
+    http://server_url/v1/equipments?searchField=value%searchField=value
+
+    This API searches for exact match and does not support nested search or conditional search.
+    'searchField' cannot be a field in 'equipment_attributes'.
+    'searchField' can be "department_tag", "gt_tag", "equipment_type_name", "status", "loaned_to", "created_on", "last_updated", "comment"
+    More search criteria can be added by using '%' as a separator.
+
+    If query is not given, then API returns all available Equipment Type documents (search all).
+
+    http://server_url/v1/equipments
+
+    Update (PUT)
+
+    At least one identifier must be present in the request JSON.
+    Identifiers are "_id", "department_tag", and "gt_tag".
+
+    "update_equipment" - Updates fields of Equipment document.
+        "department_tag", "gt_tag", "status", "loaned_to", "comments" can be changed.
+        It is not possible to change equipment type of an Equipment.
+        "equipment_type_name" will be changed by the system if Equipment Type's name is changed.
+
+    "update_equipment_attributes" - Either "_id" or "name" must be present.
+        "value" is only field that can be changed and this will be checked against Equipment Type Attribute information.
+
+    "add_equipment_attributes" - "name" and "value" must be presented and this will be checked against Equipment Type Attribute information.
+
+    "remove_equipment_attributes" - ID string of Equipment Type Attribute must be present. Required attributes cannot be deleted.
+
+    {
+    	"_id" : "58e81cc37f8b9ac4571ef7c6",
+        "department_tag" : "math-12342",
+    	"gt_tag" : null,
+
+    	"update_equipment" :
+    	{
+            "department_tag": "math-12342",
+            "gt_tag": null,
+            "status": "loaned",
+            "loaned_to": "filoseta",
+            "comments": "some comment"
+    	},
+
+    	"update_equipment_attributes" :
+    	[
+    		{
+    			"_id" : "58e81cc37f8b9ac4571ef7c6",
+    			"name" : "serial_number",
+                "value" : "some other value"
+    		}
+    	],
+
+    	"add_equipment_attributes" :
+    	[
+    		{
+                "name" : "serial_number999",
+                "value" : "some value"
+    		}
+    	],
+
+    	"remove_equipment_attributes" :
+    	[
+    		"58e81cc37f8b9ac4571ef7c7"
+    	]
+    }
+
+    http://server_url/v1/equipments
+
+    Delete (DELETE)
+
+    http://server_url/v1/equipments
+
+    Bulk delete is not supported. One of the following unique identifiers must be presented in the request JSON.
+
+    Unique identifiers:
+        '_id', 'department_tag', 'gt_tag'
+
+    Sample request JSON:
+
+    {
+        "_id" : "58e81cc37f8b9ac4571ef7c6",
+        "department_tag" : "math-1234",
+        "gt_tag" : "gttag1234"
+    }
+
+3. User
+
+    Create (POST)
+
+    http://server_url/v1/users
+
+    Sample request JSON:
+
+    {
+    	"username" : "filoseta",
+    	"email" : "filoseta@gatech.edu"
+    }
+
+    Read (GET)
+
+    http://server_url/v1/users?searchField=value%searchField=value
+
+    This API searches for exact match and does not support nested search or conditional search.
+    'searchField' can be "username" and "email".
+    More search criteria can be added by using '%' as a separator.
+
+    If query is not given, then API returns all available User documents (search all).
+
+    Update (PUT)
+
+    Either "_id" or "username" must be presented.
+
+    {
+    	"_id" : "idstring",
+      "username" : "filoseta",
+
+    	"edit_user" :
+    	{
+    		"email" : "new-email"
+    	},
+
+    	"add_current_loans" : [
+    		"loan ids"
+    	],
+
+    	"add_past_loans" : [
+    		"loan ids"
+    	],
+
+    	"remove_current_loans" : [
+    		"loan ids"
+    	],
+
+    	"remove_past_loans" : [
+    		"loan ids"
+    	]
+    }
+
+    Delete (DELETE)
+
+    One of the following identifier must be presented.
+
+    {
+    	"_id" : "idstring",
+    	"username" : "filoseta"
+    }
+
+4. Loan
+
+    Create (POST)
+
+    http://server_url/v1/loans
+
+    All fields must be presented.
+
+    {
+    	"username" : "filoseta",
+    	"equipments" : [
+    		"58f66d9e7f8b9a5a26c477ec"
+    	],
+    	"due_date" : "2017-05-01 23:59:59"
+    }
+
+    Read (GET)
+
+    http://server_url/v1/loans?searchField=value
+
+    This API searches for exact match and does not support nested search or conditional search.
+    'searchField' can be "username".
+    More search criteria can be added by using '%' as a separator.
+
+    If query is not given, then API returns all available User documents (search all).
+
+    Update (PUT)
+
+    http://server_url/v1/loans
+
+    Sample request JSON:
+
+    "_id" must be presented.
+    In "update_loan", setting "is_returned" to true update equipments' status and loaned_to fields.
+
+    {
+        "_id" : "loan id string",
+
+        "update_loan" : {
+            "loaned_date" : "2017-01-01 00:00:00",
+            "due_date" : "2017-01-01 00:00:00",
+            "is_returned" : true
+        },
+
+        "add_equipments" : [
+            "equipment id string"
+        ],
+
+        "remove_equipments" : [
+            "equipment id string"
+        ]
+    }
+
+    Delete (DELETE)
+
+    {
+        "_id" : "loan id string"
+    }

@@ -1,0 +1,62 @@
+
+<div class="container index-div" ng-controller="NewEquipmentTypeController">
+	<div class="row">
+	<div class="col-lg-2"></div>
+	<div class="col-lg-8 col-md-12">
+		<h1>{{ title }}</h1>
+
+	<form  ng-submit="submitEquipmentTypeCreation()">
+		<fieldset>
+			<div ng-repeat="label in labels">
+				<div class="form-group">
+					<label>{{label}}</label>
+					<input class="form-control" type="text" ng-model="returnObject[label]" placeholder="Enter">
+				</div>
+			</div>
+							
+
+				<fieldset  ng-repeat="attribute in returnObject.equipment_type_attributes track by $index">
+				<h4>Add Attributes</h4>
+					<fieldset class="">
+						<input class="form-control" type="text" ng-model="attribute.name" placeholder="Name" required>
+						<input class="form-control" type="text" ng-model="attribute.data_type" placeholder="Data Type" required>
+						<input class="form-control" type="text" ng-model="attribute.regex" placeholder="Regex">
+						<input class="form-control" type="text" ng-model="attribute.help_comment" placeholder="Help Comment"> <br>
+						<input class="form-control" value="Remove" type="button" class="remove" ng-show="$index != 0" ng-click="removeAttribute($event, $index)"></input>
+						<div>
+						<label>Required</label>
+						<input type="checkbox" ng-init="attribute.required=false" ng-model="attribute.required"> <br>
+
+						<label>Unique</label>
+						<input type="checkbox" ng-init="attribute.unique=false" ng-model="attribute.unique"> <br>
+
+						<label>Enum</label>
+						<input type="checkbox" ng-init="attribute.enum=false" ng-model="attribute.enum" ng-change="initEnumVals(attribute.enum, attribute)">
+						</div>
+
+						<div class="form-group" ng-show="attribute.enum">
+							<h4>Add enums</h4>
+							<fieldset ng-repeat="enum in attribute.enum_values track by $index">
+								<input type="text" ng-model="attribute.enum_values[$index]" placeholder="Enum Value" required>
+								<input type="button" value="Remove Enum" ng-show="$index != 0" ng-click="deleteEnum($event, key, $parent.$index)">
+							</fieldset>
+							<input ng-click="addNewEnum(attribute)" value="Add Enums" type="button"></input>	
+						</div>
+
+
+					</fieldset>
+				</fieldset>
+				<input value="Add fields" type="button" class="addfields btn btn-default" ng-click="addNewAttribute($index)"></input>
+
+
+     <button class="btn btn-default" type="submit">Submit</button>
+
+		</fieldset>
+	</form>
+	</div>
+			<div class="col-lg-2"></div>
+			</div>
+
+
+</div>
+
